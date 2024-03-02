@@ -1,3 +1,37 @@
+def setupEnvFile(searchParam) {
+  if (searchParam !== null && System.properties[searchParam] !== null) {
+    return System.properties[searchParam]
+  }
+
+  if (System.properties['ENV_FILE_PATH'] == null) {
+    // First try searching on project root.
+    def projectFileEnv = new File("$rootProject.rootDir/../clearsale.gradle.env")
+    def projectFileEnvExists = projectFileEnv.exists()
+    if (projectFileEnvExists) {
+      System.properties['ENV_FILE_PATH'] = projectFileEnv.path
+    } else {
+      System.properties['ENV_FILE_PATH'] = System.env.DIRNAME ?: System.env.PWD + "/../clearsale.gradle.env"
+    }
+  }
+
+  file(System.properties['ENV_FILE_PATH']).readLines().each() {
+    def (key, value) = it.tokenize('=');
+    if (key !== null && value !== null) {
+      System.properties[key] = value
+    } else {
+      throw new InvalidUserDataException("[CSDOCUMENTOSCOPY SDK] - Invalid value for clearsale.gradle.env. Received key: $key, value: $value")
+    }
+  }
+
+  if (searchParam !== null) {
+    return System.properties[searchParam]
+  }
+
+  return null
+}
+
+setupEnvFile()
+
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has("kotlinVersion") ? rootProject.ext.get("kotlinVersion") : project.properties["CsdocumentoscopyReactNative_kotlinVersion"]
@@ -82,6 +116,25 @@ repositories {
   google()
 }
 
+
+rootProject.allprojects {
+  repositories {
+    google()
+    mavenCentral()
+    maven {
+      url  System.properties['CS_DOCUMENTOSCOPY_TEC_ARTIFACTS_FEED_URL']
+      name  System.properties['CS_DOCUMENTOSCOPY_TEC_ARTIFACTS_FEED_NAME']
+      credentials {
+        username System.properties['CS_DOCUMENTOSCOPY_TEC_USER']
+        password  System.properties['CS_DOCUMENTOSCOPY_TEC_PASS']
+      }
+      authentication {
+        basic(BasicAuthentication)
+      }
+    }
+  }
+}
+
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
@@ -90,5 +143,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation "sale.clear.studio:documentoscopy-sdk:$System.properties.CS_DOCUMENTOSCOPY_VERSION"
 }
+
 

@@ -8,15 +8,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import type { CSDocumentosCopyResult } from 'csdocumentoscopy-react-native';
 import { useCSDocumentosCopy } from 'csdocumentoscopy-react-native';
 
 export default function App() {
   const [clientId, setClientId] = React.useState<string>('');
   const [clientSecretId, setClientSecretId] = React.useState<string>('');
-  const [sdkResponse, setSdkResponse] = React.useState<{
-    sessionId?: string | null;
-    documentType?: string | null;
-  } | null>(null);
+  const [identifierId, setIdentifierId] = React.useState<string>('');
+  const [cpf, setCpf] = React.useState<string>('');
+  const [sdkResponse, setSdkResponse] =
+    React.useState<CSDocumentosCopyResult | null>(null);
   const { open: openCsDocumentosCopy } = useCSDocumentosCopy();
 
   return (
@@ -33,32 +34,43 @@ export default function App() {
         placeholder="Client Secret"
         onChangeText={setClientSecretId}
       />
+      <TextInput
+        style={styles.input}
+        value={identifierId}
+        placeholder="IdentifierID"
+        onChangeText={setIdentifierId}
+      />
+      <TextInput
+        style={styles.input}
+        value={cpf}
+        placeholder="CPF"
+        onChangeText={setCpf}
+      />
 
       <TouchableOpacity
         style={styles.button}
         onPress={async () => {
           try {
-            const { sessionId, documentType, error } =
-              await openCsDocumentosCopy({
-                clientId,
-                clientSecretId,
-              });
+            const { sessionId, documentType } = await openCsDocumentosCopy({
+              clientId,
+              clientSecretId,
+              identifierId,
+              cpf,
+            });
 
             setSdkResponse({ documentType, sessionId });
             console.log(`Received documentType: ${documentType}`);
             console.log(`Received sessionId: ${sessionId}`);
-            console.log(`Received error: ${error}`);
-
-            if (error) {
-              throw new Error(error);
-            }
           } catch (e) {
+            // Possible errors are CSDocumentoscopySDKError and UserCancel.
             console.error(e);
             Alert.alert(
               'SDKError',
               'Something went wrong, check you dev console',
               [{ text: 'OK' }]
             );
+
+            setSdkResponse(e.toString());
           }
         }}
       >

@@ -21,29 +21,20 @@ const CsdocumentoscopyReactNative = NativeModules.CsdocumentoscopyReactNative
 const CSDocumentosCopySchema = new SimpleSchema({
   clientId: String,
   clientSecretId: String,
-  identifierId: {
-    type: String,
-    defaultValue: null,
-    optional: true,
-  },
-  cpf: {
-    type: String,
-    defaultValue: null,
-    optional: true,
-  },
+  identifierId: String,
+  cpf: String,
 });
 
-type CSDocumentosCopyConfiguration = {
+export type CSDocumentosCopyConfiguration = {
   clientId: string;
   clientSecretId: string;
-  identifierId?: string | null;
-  cpf?: string | null;
+  identifierId?: string;
+  cpf?: string;
 };
 
-type CSDocumentosCopyResult = {
+export type CSDocumentosCopyResult = {
   documentType: string | null;
   sessionId: string | null;
-  error: string | null;
 };
 export const useCSDocumentosCopy = () => {
   return {
