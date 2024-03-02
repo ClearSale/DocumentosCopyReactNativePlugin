@@ -1,4 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
+import SimpleSchema from 'simpl-schema';
 
 const LINKING_ERROR =
   `The package 'csdocumentoscopy-react-native' doesn't seem to be linked. Make sure: \n\n` +
@@ -17,6 +18,46 @@ const CsdocumentoscopyReactNative = NativeModules.CsdocumentoscopyReactNative
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return CsdocumentoscopyReactNative.multiply(a, b);
-}
+const CSDocumentosCopySchema = new SimpleSchema({
+  clientId: String,
+  clientSecretId: String,
+  identifierId: {
+    type: String,
+    defaultValue: null,
+    optional: true,
+  },
+  cpf: {
+    type: String,
+    defaultValue: null,
+    optional: true,
+  },
+});
+
+type CSDocumentosCopyConfiguration = {
+  clientId: string;
+  clientSecretId: string;
+  identifierId?: string | null;
+  cpf?: string | null;
+};
+
+type CSDocumentosCopyResult = {
+  documentType: string | null;
+  sessionId: string | null;
+  error: string | null;
+};
+export const useCSDocumentosCopy = () => {
+  return {
+    open: async (
+      csDocumentosCopyConfig: CSDocumentosCopyConfiguration
+    ): Promise<CSDocumentosCopyResult> => {
+      const cleanedDoc = CSDocumentosCopySchema.clean(csDocumentosCopyConfig, {
+        getAutoValues: true,
+        trimStrings: true,
+      });
+
+      CSDocumentosCopySchema.validate(cleanedDoc);
+
+      return CsdocumentoscopyReactNative.openCSDocumentosCopy(cleanedDoc);
+    },
+  };
+};
