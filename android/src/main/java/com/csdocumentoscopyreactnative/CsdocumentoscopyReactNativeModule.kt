@@ -51,7 +51,7 @@ class CsdocumentoscopyReactNativeModule(reactContext: ReactApplicationContext) :
         override fun didReceiveError(error: CSDocumentoscopySDKError) {
           Log.e("[CSDocumentosCopy]", "Called didReceiveError", null);
 
-          promise.reject(error.text, error.errorCode.toString(), null)
+          promise.reject(error.errorCode.toString(), error.text, null)
         }
 
         override fun didTapClose() {
