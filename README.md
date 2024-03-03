@@ -44,7 +44,7 @@ type CSDocumentosCopyResult = {
 };
 ```
 
-Caso a promise seja rejeitada, ela retorna o erro que causou a rejeição (`CSDocumentoscopySDKError` e `UserCancel`).
+Caso a promise seja rejeitada, ela retorna o erro que causou a rejeição (`CSDocumentoscopySDKError no Android`, `CSDocumentoscopyError no iOS` e `UserCancel`).
 
 ## Exemplo de uso
 ```tsx

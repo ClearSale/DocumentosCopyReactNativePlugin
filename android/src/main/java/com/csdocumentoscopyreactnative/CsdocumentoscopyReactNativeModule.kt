@@ -1,17 +1,15 @@
 package com.csdocumentoscopyreactnative
 
-import android.content.Intent
 import android.util.Log
 import com.clear.studio.csdocs.entries.CSDocumentoscopy
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDK
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDKError
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDKListener
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDKResult
-import com.clear.studio.csdocs.presentation.CSDocumentoscopyActivity
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -30,13 +28,13 @@ class CsdocumentoscopyReactNativeModule(reactContext: ReactApplicationContext) :
     val identifierId: String = if (sdkParams.hasKey("identifierId") && sdkParams.getString("identifierId") != null) sdkParams.getString("identifierId")!! else throw Exception("identifierId is required")
     val cpf: String = if (sdkParams.hasKey("cpf") && sdkParams.getString("cpf") != null) sdkParams.getString("cpf")!! else throw Exception("cpf is required")
 
-    val responseMap: WritableMap = WritableNativeMap()
-
     try {
       val csDocumentosCopyConfig = CSDocumentoscopy(clientId, clientSecretId, identifierId, cpf)
       val listener = object: CSDocumentoscopySDKListener {
         override fun didFinishCapture(result: CSDocumentoscopySDKResult) {
           Log.d("[CSDocumentosCopy]", "Called didFinishCapture");
+
+          val responseMap: WritableMap = WritableNativeMap()
           responseMap.putString("documentType", result.documentType?.toString())
           responseMap.putString("sessionId", result.sessionId)
 
@@ -52,16 +50,14 @@ class CsdocumentoscopyReactNativeModule(reactContext: ReactApplicationContext) :
 
         override fun didReceiveError(error: CSDocumentoscopySDKError) {
           Log.e("[CSDocumentosCopy]", "Called didReceiveError", null);
-          responseMap.putString("error", error.text)
 
-          promise.reject("SDKError", responseMap)
+          promise.reject(error.text, error.errorCode.toString(), null)
         }
 
         override fun didTapClose() {
           Log.d("[CSDocumentosCopy]", "Called didTapClose");
-          responseMap.putString("error", "UserCancel")
 
-          promise.reject("UserCancel", responseMap)
+          promise.reject("UserCancel", "UserCancel", null)
         }
 
       }
