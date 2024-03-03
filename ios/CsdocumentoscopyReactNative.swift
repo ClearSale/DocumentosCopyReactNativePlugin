@@ -77,7 +77,7 @@ extension CsdocumentoscopyReactNative: CSDocumentoscopyDelegate {
         NSLog("\(LOG_TAG) - called didReceiveError")
         
         if let promiseReject = self.reject {
-            promiseReject(String(error.text), error.localizedDescription, error)
+            promiseReject(String(error.text), String(error.text), error)
         }
         
         self.resetPromise()
