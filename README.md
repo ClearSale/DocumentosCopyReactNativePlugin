@@ -20,6 +20,19 @@ CS_DOCUMENTOSCOPY_TEC_PASS=ACCESSTOKEN // valor fornecido pela clear sale
 CS_DOCUMENTOSCOPY_VERSION=LAST_VERSION // valor fornecido pela clear sale
 ```
 
+### iOS
+No arquivo `Podfile` de seu projeto adicione o seguinte código:
+
+```
+platform :ios, '15.0'
+
+use_frameworks!
+
+target 'NOME_DO_SEU_PROJETO' do
+  pod 'CSDocumentoscopySDK', :git => 'URL DO REPOSITÓRIO ENVIADO PELA CLEARSALE', :tag => 'VERSÃO AQUI'
+end
+```
+
 ## Instruções de uso
 Importe o plugin no seu projeto e use o `useCSDocumentosCopy` hook para receber uma função `open` que irá chamar a SDK nativa do dispositivo.
 
