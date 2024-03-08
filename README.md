@@ -99,8 +99,10 @@ const reactComponent = () => {
 
 1. Conecte um dispositivo físico (`Android` ou `iOS` - o nosso `SDK` não roda em emuladores, apenas em dispositivos fisícos) à sua máquina de desenvolvimento.
 2. Clone esse repositório e rode `yarn`. Como esse projeto usa `yarn workspaces`, deve-se usar o comando `yarn` para instalar as dependências.
-3. Coloque suas credenciais no arquivo clearsale.gradle.env na raiz do projeto `react-native`
-4. Rode `yarn example android|ios`
+3. Coloque suas credenciais no arquivo `clearsale.gradle.env` (crie ele e adicione as informações conforme descrito na etapa de instalação) na raiz do projeto de exemplo e adicione também as credenciais no arquivo `example/ios/Podfile`.
+4. Rode `yarn example android|ios` (no caso do `iOS` é necessário rodar `pod install` na pasta `example/ios` primeiro).
+   - Caso queira rodar com o Android Studio o app de Android, é só abrir a pasta `example/android` no Android Studio.
+   - Caso queira rodar com o XCode o app de iOS, é só abrir o `CsdocumentoscopyReactNativeExample.xcworkspace/` com o XCode.
 5. Ao pressionar o botão `Open CSDocumentosCopy` o SDK DocumentosCopy iniciará. Após completar o fluxo o aplicativo retorna o `documentType` e `sessionId`.
 
 ## Detalhes de privacidade
