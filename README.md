@@ -32,6 +32,7 @@ target 'NOME_DO_SEU_PROJETO' do
   pod 'CSDocumentoscopySDK', :git => 'URL DO REPOSITÓRIO ENVIADO PELA CLEARSALE', :tag => 'VERSÃO AQUI'
 end
 ```
+Adicione também (caso não tenha ainda) a chave `NSCameraUsageDescription` em seu `Info.plist`.
 
 ## Instruções de uso
 Importe o plugin no seu projeto e use o `useCSDocumentosCopy` hook para receber uma função `open` que irá chamar a SDK nativa do dispositivo.

@@ -61,7 +61,7 @@ extension CsdocumentoscopyReactNative: CSDocumentoscopyDelegate {
         NSLog("\(LOG_TAG) - called didFinishCapture")
         
         let responseMap = NSMutableDictionary();
-        responseMap.setValue(result.documentType, forKey: "documentType")
+        responseMap.setValue(result.documentType.rawValue, forKey: "documentType")
         responseMap.setValue(result.sessionId, forKey: "sessionId")
         
         if let promiseResolve = self.resolve {
