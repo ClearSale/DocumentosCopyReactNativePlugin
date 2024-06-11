@@ -1,9 +1,10 @@
-import * as React from 'react';
-
+import React, { useState } from 'react';
 import {
   Alert,
   Animated,
+  Platform,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -15,21 +16,29 @@ import { useCSDocumentosCopy } from 'csdocumentoscopy-react-native';
 import { ColorButton } from './ColorButton';
 
 export default function App() {
-  const [clientId, setClientId] = React.useState<string>('');
-  const [clientSecretId, setClientSecretId] = React.useState<string>('');
-  const [identifierId, setIdentifierId] = React.useState<string>('');
-  const [cpf, setCpf] = React.useState<string>('');
-  const [primaryColor, setPrimaryColor] = React.useState('#FF4800');
-  const [secondaryColor, setSecondaryColor] = React.useState('#FF4800');
-  const [titleColor, setTitleColor] = React.useState('#283785');
-  const [paragraphColor, setParagraphColor] = React.useState('#353840');
-
+  const [clientId, setClientId] = useState<string>('');
+  const [clientSecretId, setClientSecretId] = useState<string>('');
+  const [identifierId, setIdentifierId] = useState<string>('');
+  const [cpf, setCpf] = useState<string>('');
+  const [primaryColor, setPrimaryColor] = useState<string>('#FF4800');
+  const [secondaryColor, setSecondaryColor] = useState<string>('#FF4800');
+  const [tertiaryColor, setTertiaryColor] = useState<string>('#EFEFEFFF');
+  const [titleColor, setTitleColor] = useState<string>('#283785');
+  const [paragraphColor, setParagraphColor] = useState<string>('#353840');
   const [sdkResponse, setSdkResponse] =
     React.useState<CSDocumentosCopyResult | null>(null);
   const { open: openCsDocumentosCopy } = useCSDocumentosCopy();
 
   return (
     <SafeAreaView style={styles.container}>
+      {Platform.OS === 'ios' ? null : (
+        <StatusBar
+          animated={true}
+          backgroundColor="#000000"
+          hidden={false}
+          barStyle="default"
+        />
+      )}
       <Animated.ScrollView
         style={styles.scrollViewStyle}
         contentContainerStyle={styles.scrollViewContentStyle}
@@ -38,93 +47,99 @@ export default function App() {
         <TextInput
           style={styles.input}
           value={clientId}
-          placeholder="ClientID"
+          placeholder="ClientID *"
           onChangeText={setClientId}
         />
         <TextInput
           style={styles.input}
           value={clientSecretId}
-          placeholder="Client Secret"
+          placeholder="Client Secret *"
           onChangeText={setClientSecretId}
         />
         <TextInput
           style={styles.input}
           value={identifierId}
-          placeholder="IdentifierID"
+          placeholder="IdentifierID *"
           onChangeText={setIdentifierId}
         />
         <TextInput
           style={styles.input}
           value={cpf}
-          placeholder="CPF"
+          placeholder="CPF *"
           onChangeText={setCpf}
         />
 
-        <View style={styles.buttonList}>
+        <View style={styles.buttonContainer}>
           <ColorButton
             color={primaryColor}
             setColor={setPrimaryColor}
-            label="Primary Color"
             buttonTitleStyle={styles.buttonTitle}
+            label="Primary"
           />
           <ColorButton
             color={secondaryColor}
             setColor={setSecondaryColor}
-            label="Secondary Color"
             buttonTitleStyle={styles.buttonTitle}
+            label="Secondary"
+          />
+          <ColorButton
+            color={tertiaryColor}
+            setColor={setTertiaryColor}
+            buttonTitleStyle={styles.buttonTitle}
+            label="Tertiary"
           />
           <ColorButton
             color={titleColor}
             setColor={setTitleColor}
-            label="Title Color"
             buttonTitleStyle={styles.buttonTitle}
+            label="Title"
           />
           <ColorButton
             color={paragraphColor}
             setColor={setParagraphColor}
-            label="Paragraph Color"
             buttonTitleStyle={styles.buttonTitle}
+            label="Paragraph"
           />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={async () => {
-              try {
-                const { sessionId, documentType } = await openCsDocumentosCopy({
-                  clientId,
-                  clientSecretId,
-                  identifierId,
-                  cpf,
-                  primaryColor,
-                  secondaryColor,
-                  titleColor,
-                  paragraphColor,
-                });
-
-                setSdkResponse({ documentType, sessionId });
-                console.log(`Received documentType: ${documentType}`);
-                console.log(`Received sessionId: ${sessionId}`);
-              } catch (e) {
-                // Possible errors are CSDocumentoscopySDKError and UserCancel.
-                console.error(e);
-                Alert.alert(
-                  'SDKError',
-                  'Something went wrong, check you dev console',
-                  [{ text: 'OK' }]
-                );
-
-                setSdkResponse(e.toString());
-              }
-            }}
-          >
-            <Text style={styles.buttonTitle}>Open CSDocumentosCopy</Text>
-          </TouchableOpacity>
         </View>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={async () => {
+            try {
+              const { sessionId, documentType } = await openCsDocumentosCopy({
+                clientId,
+                clientSecretId,
+                identifierId,
+                cpf,
+                primaryColor,
+                secondaryColor,
+                tertiaryColor,
+                titleColor,
+                paragraphColor,
+              });
+
+              setSdkResponse({ documentType, sessionId });
+              console.log(`Received documentType: ${documentType}`);
+              console.log(`Received sessionId: ${sessionId}`);
+            } catch (e: any) {
+              // Possible errors are CSDocumentoscopySDKError and UserCancel.
+              console.error(e);
+              Alert.alert(
+                'SDKError',
+                'Something went wrong, check you dev console',
+                [{ text: 'OK' }]
+              );
+
+              setSdkResponse(e.toString());
+            }
+          }}
+        >
+          <Text style={styles.buttonTitle}>Open CSDocumentosCopy</Text>
+        </TouchableOpacity>
 
         {sdkResponse ? (
           <View>
-            <Text style={styles.title}>
-              Result: {JSON.stringify(sdkResponse)}
-            </Text>
+            <Text>Result: {JSON.stringify(sdkResponse, undefined, 2)}</Text>
           </View>
         ) : null}
       </Animated.ScrollView>
@@ -134,11 +149,23 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 20,
-    minHeight: '100%',
     backgroundColor: 'white',
+    marginVertical: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  scrollViewStyle: { width: '100%' },
+  scrollViewContentStyle: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
   },
   input: {
     width: '90%',
@@ -153,40 +180,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    color: '#FFFFFF',
-    backgroundColor: 'grey',
+    backgroundColor: 'black',
     width: '90%',
   },
-  buttonTitle: {
-    fontSize: 14,
-    lineHeight: 16,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'black',
-  },
-  colorContainer: {
-    margin: 5,
-  },
-  buttonList: {
-    flex: 1,
-    flexWrap: 'wrap',
+  buttonContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
-    alignItems: 'center',
-    height: '50%',
-    gap: 30,
-  },
-  scrollViewStyle: { width: '100%' },
-  scrollViewContentStyle: {
-    width: '100%',
-    justifyContent: 'center',
     alignItems: 'center',
     gap: 20,
   },
-  title: {
-    marginTop: 20,
-    color: 'black',
-    fontSize: 20,
+  buttonTitle: {
+    fontSize: 16,
+    lineHeight: 21,
     fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
   },
 });

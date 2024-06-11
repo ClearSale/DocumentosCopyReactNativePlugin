@@ -1,7 +1,7 @@
+import * as React from 'react';
 import { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ColorPicker from 'react-native-wheel-color-picker';
-import * as React from 'react';
 
 export const ColorButton = ({
   color,
@@ -18,26 +18,28 @@ export const ColorButton = ({
 
   return (
     <View>
-      <Text style={styles.textTitle}>{label}</Text>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Text style={buttonTitleStyle}>{color}</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonTrigger}>
+        <Text style={styles.textTitle}>{label}</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={buttonTitleStyle}>{color}</Text>
+        </TouchableOpacity>
+      </View>
 
       <Modal animationType="slide" transparent={true} visible={isModalVisible}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>{label}</Text>
           <ColorPicker
             color={color}
-            onColorChangeComplete={console.log}
             onColorChange={setColor}
             thumbSize={20}
             sliderSize={20}
             noSnap={false}
             row={true}
+            useNativeDriver={true}
+            useNativeLayout={true}
           />
           <TouchableOpacity
             style={styles.button}
@@ -52,8 +54,15 @@ export const ColorButton = ({
 };
 
 const styles = StyleSheet.create({
+  buttonTrigger: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10,
+  },
   modalContainer: {
-    flex: 1,
+    flexDirection: 'column',
+    height: '100%',
+    paddingVertical: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -99,8 +108,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 4,
     elevation: 3,
-    color: '#FFFFFF',
-    backgroundColor: 'grey',
-    width: 130,
+    color: 'white',
+    backgroundColor: 'black',
+    width: 150,
   },
 });
