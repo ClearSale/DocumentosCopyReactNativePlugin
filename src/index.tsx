@@ -23,6 +23,10 @@ const CSDocumentosCopySchema = new SimpleSchema({
   clientSecretId: String,
   identifierId: String,
   cpf: String,
+  primaryColor: String,
+  secondaryColor: String,
+  titleColor: String,
+  paragraphColor: String,
 });
 
 export type CSDocumentosCopyConfiguration = {
@@ -30,6 +34,10 @@ export type CSDocumentosCopyConfiguration = {
   clientSecretId: string;
   identifierId?: string;
   cpf?: string;
+  primaryColor?: String;
+  secondaryColor?: String;
+  titleColor?: String;
+  paragraphColor?: String;
 };
 
 export type CSDocumentosCopyResult = {

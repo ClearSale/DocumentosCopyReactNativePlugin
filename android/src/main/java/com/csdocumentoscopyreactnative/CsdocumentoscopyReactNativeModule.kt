@@ -1,8 +1,11 @@
 package com.csdocumentoscopyreactnative
 
+import android.graphics.Color
 import android.util.Log
 import com.clear.studio.csdocs.entries.CSDocumentoscopy
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDK
+import com.clear.studio.csdocs.entries.CSDocumentoscopySDKColorsConfig
+import com.clear.studio.csdocs.entries.CSDocumentoscopySDKConfig
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDKError
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDKListener
 import com.clear.studio.csdocs.entries.CSDocumentoscopySDKResult
@@ -28,8 +31,25 @@ class CsdocumentoscopyReactNativeModule(reactContext: ReactApplicationContext) :
     val identifierId: String = if (sdkParams.hasKey("identifierId") && sdkParams.getString("identifierId") != null) sdkParams.getString("identifierId")!! else throw Exception("identifierId is required")
     val cpf: String = if (sdkParams.hasKey("cpf") && sdkParams.getString("cpf") != null) sdkParams.getString("cpf")!! else throw Exception("cpf is required")
 
+
+    val primaryColor = sdkParams.getString("primaryColor")
+    val secondaryColor = sdkParams.getString("secondaryColor")
+    val tertiaryColor = sdkParams.getString("tertiaryColor")
+    val titleColor = sdkParams.getString("titleColor")
+    val paragraphColor = sdkParams.getString("paragraphColor")
+
+    val sdkConfig = CSDocumentoscopySDKConfig(
+      colors = CSDocumentoscopySDKColorsConfig(
+        primaryColor = if (!primaryColor.isNullOrBlank()) Color.parseColor(primaryColor) else null,
+        secondaryColor = if (!secondaryColor.isNullOrBlank()) Color.parseColor(secondaryColor) else null,
+        tertiaryColor = if (!tertiaryColor.isNullOrBlank()) Color.parseColor(tertiaryColor) else null,
+        titleColor = if (!titleColor.isNullOrBlank()) Color.parseColor(titleColor) else null,
+        paragraphColor = if (!paragraphColor.isNullOrBlank()) Color.parseColor(paragraphColor) else null
+      )
+    )
+
     try {
-      val csDocumentosCopyConfig = CSDocumentoscopy(clientId, clientSecretId, identifierId, cpf)
+      val csDocumentosCopyConfig = CSDocumentoscopy(clientId, clientSecretId, identifierId, cpf, sdkConfig)
       val listener = object: CSDocumentoscopySDKListener {
         override fun didFinishCapture(result: CSDocumentoscopySDKResult) {
           Log.d("[CSDocumentosCopy]", "Called didFinishCapture");
