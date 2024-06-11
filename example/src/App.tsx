@@ -14,6 +14,7 @@ import {
 import type { CSDocumentosCopyResult } from 'csdocumentoscopy-react-native';
 import { useCSDocumentosCopy } from 'csdocumentoscopy-react-native';
 import { ColorButton } from './ColorButton';
+import MaskInput from 'react-native-mask-input';
 
 export default function App() {
   const [clientId, setClientId] = useState<string>('');
@@ -62,11 +63,29 @@ export default function App() {
           placeholder="IdentifierID *"
           onChangeText={setIdentifierId}
         />
-        <TextInput
+        <MaskInput
           style={styles.input}
           value={cpf}
           placeholder="CPF *"
-          onChangeText={setCpf}
+          onChangeText={(_, unmaskedValue) => {
+            setCpf(unmaskedValue);
+          }}
+          mask={[
+            /\d/,
+            /\d/,
+            /\d/,
+            '.',
+            /\d/,
+            /\d/,
+            /\d/,
+            '.',
+            /\d/,
+            /\d/,
+            /\d/,
+            '-',
+            /\d/,
+            /\d/,
+          ]}
         />
 
         <View style={styles.buttonContainer}>

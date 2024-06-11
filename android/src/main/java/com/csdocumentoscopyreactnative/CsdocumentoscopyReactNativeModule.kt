@@ -20,64 +20,88 @@ import com.facebook.react.bridge.WritableNativeMap
 class CsdocumentoscopyReactNativeModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
+  private val logTag = "[CSDocumentosCopy]"
+  private var promise: Promise? = null
+
   override fun getName(): String {
     return NAME
   }
 
+  private fun reset() {
+    this.promise = null;
+  }
+
   @ReactMethod
   fun openCSDocumentosCopy(sdkParams: ReadableMap, promise: Promise) {
-    val clientId: String = if (sdkParams.hasKey("clientId") && sdkParams.getString("clientId") != null) sdkParams.getString("clientId")!! else throw Exception("clientId is required")
-    val clientSecretId: String = if (sdkParams.hasKey("clientSecretId") && sdkParams.getString("clientSecretId") != null) sdkParams.getString("clientSecretId")!! else throw Exception("clientSecretId is required")
-    val identifierId: String = if (sdkParams.hasKey("identifierId") && sdkParams.getString("identifierId") != null) sdkParams.getString("identifierId")!! else throw Exception("identifierId is required")
-    val cpf: String = if (sdkParams.hasKey("cpf") && sdkParams.getString("cpf") != null) sdkParams.getString("cpf")!! else throw Exception("cpf is required")
+    if (this.promise !== null) {
+      // Means that we have a SDK call pending, so nothing to do yet.
 
-
-    val primaryColor = sdkParams.getString("primaryColor")
-    val secondaryColor = sdkParams.getString("secondaryColor")
-    val tertiaryColor = sdkParams.getString("tertiaryColor")
-    val titleColor = sdkParams.getString("titleColor")
-    val paragraphColor = sdkParams.getString("paragraphColor")
-
-    val sdkConfig = CSDocumentoscopySDKConfig(
-      colors = CSDocumentoscopySDKColorsConfig(
-        primaryColor = if (!primaryColor.isNullOrBlank()) Color.parseColor(primaryColor) else null,
-        secondaryColor = if (!secondaryColor.isNullOrBlank()) Color.parseColor(secondaryColor) else null,
-        tertiaryColor = if (!tertiaryColor.isNullOrBlank()) Color.parseColor(tertiaryColor) else null,
-        titleColor = if (!titleColor.isNullOrBlank()) Color.parseColor(titleColor) else null,
-        paragraphColor = if (!paragraphColor.isNullOrBlank()) Color.parseColor(paragraphColor) else null
-      )
-    )
+      return;
+    }
 
     try {
+      this.promise = promise;
+
+      val clientId: String? = if (sdkParams.hasKey("clientId")) sdkParams.getString("clientId") else null
+      val clientSecretId: String? = if (sdkParams.hasKey("clientSecretId")) sdkParams.getString("clientSecretId") else null
+      val identifierId: String? = if (sdkParams.hasKey("identifierId")) sdkParams.getString("identifierId") else null
+      val cpf: String? = if (sdkParams.hasKey("cpf")) sdkParams.getString("cpf") else null
+
+      // Now validate
+      if (clientId.isNullOrBlank()) throw Exception("clientId is required")
+      if (clientSecretId.isNullOrBlank()) throw Exception("clientSecretId is required")
+      if (identifierId.isNullOrBlank()) throw Exception("identifierId is required")
+      if (cpf.isNullOrBlank()) throw Exception("cpf is required")
+
+
+      val primaryColor: String? = if (sdkParams.hasKey("primaryColor")) sdkParams.getString("primaryColor") else null
+      val secondaryColor: String? = if (sdkParams.hasKey("secondaryColor")) sdkParams.getString("secondaryColor") else null
+      val tertiaryColor: String? = if (sdkParams.hasKey("tertiaryColor")) sdkParams.getString("tertiaryColor") else null
+      val titleColor: String? = if (sdkParams.hasKey("titleColor")) sdkParams.getString("titleColor") else null
+      val paragraphColor: String? = if (sdkParams.hasKey("paragraphColor")) sdkParams.getString("paragraphColor") else null
+
+      val sdkConfig = CSDocumentoscopySDKConfig(
+        colors = CSDocumentoscopySDKColorsConfig(
+          primaryColor = if (!primaryColor.isNullOrBlank()) Color.parseColor(primaryColor) else null,
+          secondaryColor = if (!secondaryColor.isNullOrBlank()) Color.parseColor(secondaryColor) else null,
+          tertiaryColor = if (!tertiaryColor.isNullOrBlank()) Color.parseColor(tertiaryColor) else null,
+          titleColor = if (!titleColor.isNullOrBlank()) Color.parseColor(titleColor) else null,
+          paragraphColor = if (!paragraphColor.isNullOrBlank()) Color.parseColor(paragraphColor) else null
+        )
+      )
+
       val csDocumentosCopyConfig = CSDocumentoscopy(clientId, clientSecretId, identifierId, cpf, sdkConfig)
       val listener = object: CSDocumentoscopySDKListener {
         override fun didFinishCapture(result: CSDocumentoscopySDKResult) {
-          Log.d("[CSDocumentosCopy]", "Called didFinishCapture");
+          Log.d(logTag, "Called didFinishCapture");
 
           val responseMap: WritableMap = WritableNativeMap()
           responseMap.putString("documentType", result.documentType?.toString())
           responseMap.putString("sessionId", result.sessionId)
 
-          Log.d("[CSDocumentosCopy]", "Result is ${responseMap.toString()}")
+          Log.d(logTag, "Result is $responseMap")
 
-          promise.resolve(responseMap)
+          this@CsdocumentoscopyReactNativeModule.promise!!.resolve(responseMap)
+          this@CsdocumentoscopyReactNativeModule.reset()
         }
 
         override fun didOpen() {
           // Nothing to do here.
-          Log.d("[CSDocumentosCopy]", "Called didOpen");
+          Log.d(logTag, "Called didOpen");
         }
 
         override fun didReceiveError(error: CSDocumentoscopySDKError) {
-          Log.e("[CSDocumentosCopy]", "Called didReceiveError", null);
+          Log.e(logTag, "Called didReceiveError", null);
 
-          promise.reject(error.errorCode.toString(), error.text, null)
+          this@CsdocumentoscopyReactNativeModule.promise!!.reject(error.errorCode.toString(), error.text, null)
+          this@CsdocumentoscopyReactNativeModule.reset()
         }
 
         override fun didTapClose() {
-          Log.d("[CSDocumentosCopy]", "Called didTapClose");
+          Log.d(logTag, "Called didTapClose");
 
-          promise.reject("UserCancel", "UserCancel", null)
+          this@CsdocumentoscopyReactNativeModule.promise!!.reject("UserCancel", "UserCancel", null)
+          this@CsdocumentoscopyReactNativeModule.reset()
         }
 
       }
@@ -88,8 +112,10 @@ class CsdocumentoscopyReactNativeModule(reactContext: ReactApplicationContext) :
         throw Exception("Missing application from current activity")
       }
     } catch (t: Throwable) {
-      Log.e("[CSDocumentosCopy]", "Error starting CSDocumentosCopySDK", t)
-      promise.reject("SDKError", "Failed to start CSDocumentosCopySDK", t)
+      Log.e(logTag, "Error starting CSDocumentosCopySDK", t)
+
+      promise.reject("InternalError", t.message ?: "InternalError", null)
+      this.reset()
     }
   }
 
