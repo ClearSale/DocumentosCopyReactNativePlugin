@@ -143,6 +143,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation "androidx.compose.material:material:1.6.8"
   implementation "sale.clear.studio:documentoscopy-sdk:$System.properties.CS_DOCUMENTOSCOPY_VERSION"
 }
 
