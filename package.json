@@ -1,6 +1,6 @@
 {
   "name": "csdocumentoscopy-react-native",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "CSDocumentosCopy",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -41,14 +41,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matheusccastroo/csdocumentoscopy-react-native.git"
+    "url": "git+https://github.com/matheusccastroo/DocumentosCopyReactNativePlugin.git"
   },
   "author": "matheusccastro <camargodecastromatheus@gmail.com> (https://github.com/matheusccastroo)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/matheusccastroo/csdocumentoscopy-react-native/issues"
+    "url": "https://github.com/matheusccastroo/DocumentosCopyReactNativePlugin/issues"
   },
-  "homepage": "https://github.com/matheusccastroo/csdocumentoscopy-react-native#readme",
+  "homepage": "https://github.com/matheusccastroo/DocumentosCopyReactNativePlugin#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
